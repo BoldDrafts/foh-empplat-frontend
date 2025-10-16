@@ -32,50 +32,10 @@
       </mat-card-header>
 
       <mat-card-content>
-        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-          <mat-form-field appearance="outline">
-            <mat-label>Documento de Identidad</mat-label>
-            <mat-select formControlName="documentType">
-              <mat-option value="DNI">DNI</mat-option>
-              <mat-option value="CE">CE</mat-option>
-              <mat-option value="Pasaporte">Pasaporte</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Número de documento</mat-label>
-            <input matInput formControlName="documentNumber" maxlength="12">
-            <mat-error *ngIf="loginForm.get('documentNumber')?.hasError('required')">
-              El número de documento es requerido
-            </mat-error>
-            <mat-error *ngIf="loginForm.get('documentNumber')?.hasError('minlength')">
-              Debe tener al menos 8 caracteres
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Contraseña</mat-label>
-            <input
-              matInput
-              [type]="hidePassword ? 'password' : 'text'"
-              formControlName="password">
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              (click)="hidePassword = !hidePassword">
-              <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-            </button>
-            <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
-              La contraseña es requerida
-            </mat-error>
-          </mat-form-field>
-
-          <div class="remember-me">
-            <mat-checkbox formControlName="rememberMe">
-              Recordar DNI y RUC
-            </mat-checkbox>
-          </div>
+        <div *ngIf="useKeycloak; else normalLogin" class="keycloak-login">
+          <p class="keycloak-info">
+            Este sistema utiliza autenticación centralizada con Keycloak.
+          </p>
 
           <div *ngIf="errorMessage" class="error-message">
             {{ errorMessage }}
@@ -84,28 +44,91 @@
           <button
             mat-raised-button
             color="primary"
-            type="submit"
+            type="button"
             class="login-button"
-            [disabled]="loginForm.invalid || loading">
-            {{ loading ? 'Ingresando...' : 'Ingresar' }}
+            [disabled]="loading"
+            (click)="onLogin()">
+            <mat-icon>lock</mat-icon>
+            {{ loading ? 'Redirigiendo...' : 'Iniciar sesión con Keycloak' }}
           </button>
-        </form>
-
-        <div class="forgot-password">
-          <a href="#" class="forgot-link">
-            Recuperar contraseña
-            <mat-icon>open_in_new</mat-icon>
-          </a>
         </div>
 
-        <div class="demo-credentials">
-          <mat-icon>info</mat-icon>
-          <div>
-            <strong>Credenciales demo:</strong>
-            <p>DNI: 12345678 / Password: demo123</p>
-            <p>OTP: 123456</p>
+        <ng-template #normalLogin>
+          <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+            <mat-form-field appearance="outline">
+              <mat-label>Documento de Identidad</mat-label>
+              <mat-select formControlName="documentType">
+                <mat-option value="DNI">DNI</mat-option>
+                <mat-option value="CE">CE</mat-option>
+                <mat-option value="Pasaporte">Pasaporte</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Número de documento</mat-label>
+              <input matInput formControlName="documentNumber" maxlength="12">
+              <mat-error *ngIf="loginForm.get('documentNumber')?.hasError('required')">
+                El número de documento es requerido
+              </mat-error>
+              <mat-error *ngIf="loginForm.get('documentNumber')?.hasError('minlength')">
+                Debe tener al menos 8 caracteres
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Contraseña</mat-label>
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password">
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hidePassword = !hidePassword">
+                <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+                La contraseña es requerida
+              </mat-error>
+            </mat-form-field>
+
+            <div class="remember-me">
+              <mat-checkbox formControlName="rememberMe">
+                Recordar DNI y RUC
+              </mat-checkbox>
+            </div>
+
+            <div *ngIf="errorMessage" class="error-message">
+              {{ errorMessage }}
+            </div>
+
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              class="login-button"
+              [disabled]="loginForm.invalid || loading">
+              {{ loading ? 'Ingresando...' : 'Ingresar' }}
+            </button>
+          </form>
+
+          <div class="forgot-password">
+            <a href="#" class="forgot-link">
+              Recuperar contraseña
+              <mat-icon>open_in_new</mat-icon>
+            </a>
           </div>
-        </div>
+
+          <div class="demo-credentials">
+            <mat-icon>info</mat-icon>
+            <div>
+              <strong>Credenciales demo:</strong>
+              <p>DNI: 12345678 / Password: demo123</p>
+              <p>OTP: 123456</p>
+            </div>
+          </div>
+        </ng-template>
       </mat-card-content>
     </mat-card>
   </div>

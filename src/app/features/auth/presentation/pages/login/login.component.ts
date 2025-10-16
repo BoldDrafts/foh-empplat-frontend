@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AuthService, LoginRequest } from '../../../../../core/services/auth/auth.service.interface';
 import { OtpDialogComponent } from '../../components/otp-dialog/otp-dialog.component';
+import { environment } from '../../../../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -36,6 +37,7 @@ export class LoginComponent implements OnInit {
   hidePassword = true;
   loading = false;
   errorMessage = '';
+  useKeycloak = environment.useKeycloak;
 
   constructor(
     private fb: FormBuilder,
@@ -52,16 +54,47 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    const rememberedDni = localStorage.getItem('remembered_dni');
-    if (rememberedDni) {
-      this.loginForm.patchValue({
-        documentNumber: rememberedDni,
-        rememberMe: true
+    if (this.useKeycloak) {
+      this.authService.isAuthenticated().subscribe(isAuth => {
+        if (isAuth) {
+          this.router.navigate(['/dashboard']);
+        }
       });
+    } else {
+      const rememberedDni = localStorage.getItem('remembered_dni');
+      if (rememberedDni) {
+        this.loginForm.patchValue({
+          documentNumber: rememberedDni,
+          rememberMe: true
+        });
+      }
     }
   }
 
   onLogin() {
+    if (this.useKeycloak) {
+      this.loading = true;
+      this.errorMessage = '';
+
+      const credentials: LoginRequest = {
+        documentType: 'DNI',
+        documentNumber: '',
+        password: ''
+      };
+
+      this.authService.login(credentials).subscribe({
+        next: (response) => {
+          this.loading = false;
+          this.router.navigate(['/dashboard']);
+        },
+        error: (error) => {
+          this.loading = false;
+          this.errorMessage = error.error?.message || 'Error al iniciar sesión';
+        }
+      });
+      return;
+    }
+
     if (this.loginForm.invalid) return;
 
     this.loading = true;

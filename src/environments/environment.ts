@@ -5,7 +5,7 @@ export const environment = {
   useKeycloak: true,
 
   keycloak: {
-    url: 'https://auth.cmaconsulting.org/auth',
+    url: 'https://auth.cmaconsulting.org',
     realm: 'fohrealm',
     clientId: 'portal-empleador',
   },

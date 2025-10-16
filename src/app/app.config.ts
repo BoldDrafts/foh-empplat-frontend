@@ -7,12 +7,13 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { AuthService } from './core/services/auth/auth.service.interface';
 import { MockAuthService } from './core/services/auth/mock-auth.service';
+import { KeycloakAuthService } from './core/services/auth/keycloak-auth.service';
+import { keycloakInitializerProvider } from './core/initializers/keycloak.initializer';
 import { environment } from '../environments/environment';
 
 export function authServiceFactory(): AuthService {
   if (environment.useKeycloak) {
-    console.warn('Keycloak integration not yet implemented. Using mock service.');
-    return new MockAuthService();
+    return new KeycloakAuthService();
   }
   return new MockAuthService();
 }
@@ -25,6 +26,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([authInterceptor, errorInterceptor])
     ),
+    keycloakInitializerProvider,
     {
       provide: AuthService,
       useFactory: authServiceFactory

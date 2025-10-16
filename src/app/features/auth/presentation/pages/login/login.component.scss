@@ -117,11 +117,30 @@
     margin-top: 0.5rem;
   }
 
+  .keycloak-login {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem 0;
+
+    .keycloak-info {
+      text-align: center;
+      color: #546e7a;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+  }
+
   .login-button {
     height: 48px;
     font-size: 1rem;
     font-weight: 500;
     margin-top: 1rem;
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
   }
 
   .forgot-password {
