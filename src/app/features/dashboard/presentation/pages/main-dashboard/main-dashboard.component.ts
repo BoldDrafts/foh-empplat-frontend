@@ -6,7 +6,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../../../core/services/auth/auth.service.interface';
 import { UserInfo, Company } from '../../../../../core/models/user.model';
 import { Account } from '../../../../accounts/domain/models/account.model';
@@ -22,7 +25,10 @@ import { Account } from '../../../../accounts/domain/models/account.model';
     MatTableModule,
     MatSelectModule,
     MatFormFieldModule,
-    MatButtonModule
+    MatButtonModule,
+    MatMenuModule,
+    MatTooltipModule,
+    MatDividerModule
   ],
   templateUrl: './main-dashboard.component.html',
   styleUrls: ['./main-dashboard.component.scss']
@@ -87,7 +93,10 @@ export class MainDashboardComponent implements OnInit {
     { type: 'estado-cuenta', name: 'Reporte de estado de cuenta', icon: 'description' }
   ];
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.loadUserInfo();
@@ -103,5 +112,17 @@ export class MainDashboardComponent implements OnInit {
 
   openReport(type: string) {
     console.log('Opening report:', type);
+  }
+
+  logout() {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error('Logout error:', error);
+        this.router.navigate(['/login']);
+      }
+    });
   }
 }
